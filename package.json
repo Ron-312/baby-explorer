@@ -1,0 +1,23 @@
+{
+    "name": "baby-explorer",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "test:scanner": "ts-node src/test_scanner.ts"
+    },
+    "keywords": [],
+    "author": "Your Name <your.email@example.com>",
+    "license": "ISC",
+    "description": "A Node.js, TypeScript, and Puppeteer-based web page scanner for monitoring sensitive data access as specified in the assignment PRD.",
+    "devDependencies": {
+        "@types/node": "^24.0.15",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "dotenv": "^17.2.0",
+        "puppeteer": "^24.14.0"
+    }
+}

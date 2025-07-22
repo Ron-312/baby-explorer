@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scanner Linkage Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .section {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .linked-requests {
+            background: #fff8e7;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .linked-requests h2 {
+            color: #f39c12;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .action-type {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+        
+        .request-source {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+        
+        .url {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1em;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .collapsible:hover {
+            background-color: #555;
+        }
+        
+        .collapsible-content {
+            display: none;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #b6d4db;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Web Scanner Linkage Report</h1>
+            <p>Analysis of HTTP request correlations and sensitive data access patterns</p>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-value">17</div>
+                <div class="metric-label">Linked Requests</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #dc3545;">12</div>
+                <div class="metric-label">Failed/Blocked Requests</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">1</div>
+                <div class="metric-label">Unlinked Requests</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">9</div>
+                <div class="metric-label">Actions Detected</div>
+            </div>
+        </div>
+        
+        
+        <div class="section linked-requests">
+            <h2>🎯 Linked Requests (Action-Triggered)</h2>
+            <div class="info">
+                <strong>Important:</strong> These requests were triggered by user input access actions and may indicate data exfiltration attempts.
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action Type</th>
+                            <th>Action Data</th>
+                            <th>Request URL</th>
+                            <th>Method</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=password</td>
+                                <td><span class="url" title="https://malicious-domain-that-does-not-exist.com/steal-password">https://malicious-domain-that-does-not-exist.com/steal-password</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span class="url" title="https://evil-site-1.com/user-data">https://evil-site-1.com/user-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span class="url" title="https://evil-site-2.com/password-data">https://evil-site-2.com/password-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span class="url" title="https://evil-site-3.com/cc-data">https://evil-site-3.com/cc-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span class="url" title="https://evil-site-2.com/password-data">https://evil-site-2.com/password-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span class="url" title="https://evil-site-3.com/cc-data">https://evil-site-3.com/cc-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=form-data</td>
+                                <td><span class="url" title="https://form-stealer.com/form-data">https://form-stealer.com/form-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-1.com/ssn-data">https://rapid-fire-1.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-2.com/ssn-data">https://rapid-fire-2.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-3.com/ssn-data">https://rapid-fire-3.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-4.com/ssn-data">https://rapid-fire-4.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-1</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-5.com/ssn-data">https://rapid-fire-5.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-2.com/ssn-data">https://rapid-fire-2.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-5.com/ssn-data">https://rapid-fire-5.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-3.com/ssn-data">https://rapid-fire-3.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><span class="url" title="https://rapid-fire-4.com/ssn-data">https://rapid-fire-4.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=password</td>
+                                <td><span class="url" title="https://delayed-evil.com/cc-theft">https://delayed-evil.com/cc-theft</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="status-error">-999</span></td>
+                            </tr>
+                          
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        
+        
+        <div class="section" style="background: #ffe6e6; border-left: 4px solid #dc3545;">
+            <h2 style="color: #dc3545;">🚨 Failed/Blocked Requests (Potential Malicious Activity)</h2>
+            <div class="warning">
+                <strong>Security Alert:</strong> These requests failed or were blocked by browser security policies. They may represent attempted data exfiltration or malicious behavior.
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request URL</th>
+                            <th>Method</th>
+                            <th>Source</th>
+                            <th>Linked Action</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="file:///F:/api/test-endpoint" style="color: #dc3545; font-weight: bold;">file:///F:/api/test-endpoint</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span style="color: #999;">None</span></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://malicious-domain-that-does-not-exist.com/steal-password" style="color: #dc3545; font-weight: bold;">https://malicious-domain-that-does-not-exist.com/steal-password</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=password</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://evil-site-3.com/cc-data" style="color: #dc3545; font-weight: bold;">https://evil-site-3.com/cc-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=creditcard</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://evil-site-2.com/password-data" style="color: #dc3545; font-weight: bold;">https://evil-site-2.com/password-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=creditcard</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://evil-site-3.com/cc-data" style="color: #dc3545; font-weight: bold;">https://evil-site-3.com/cc-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=creditcard</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://form-stealer.com/form-data" style="color: #dc3545; font-weight: bold;">https://form-stealer.com/form-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=form-data</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://rapid-fire-5.com/ssn-data" style="color: #dc3545; font-weight: bold;">https://rapid-fire-5.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=ssn</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://rapid-fire-2.com/ssn-data" style="color: #dc3545; font-weight: bold;">https://rapid-fire-2.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=ssn</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://rapid-fire-5.com/ssn-data" style="color: #dc3545; font-weight: bold;">https://rapid-fire-5.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=ssn</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://rapid-fire-3.com/ssn-data" style="color: #dc3545; font-weight: bold;">https://rapid-fire-3.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=ssn</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://rapid-fire-4.com/ssn-data" style="color: #dc3545; font-weight: bold;">https://rapid-fire-4.com/ssn-data</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=ssn</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                            <tr style="background-color: #fff5f5;">
+                                <td><span class="url" title="https://delayed-evil.com/cc-theft" style="color: #dc3545; font-weight: bold;">https://delayed-evil.com/cc-theft</span></td>
+                                <td><strong>POST</strong></td>
+                                <td><span class="request-source">fetch</span></td>
+                                <td><span class="action-type">input.value</span><br><small>id=password</small></td>
+                                <td><span style="color: #dc3545; font-weight: bold;">BLOCKED</span></td>
+                            </tr>
+                          
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        
+        <div class="section">
+            <h2>📊 Action Types Breakdown</h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Detected Actions</h3>
+                    
+                        <div class="breakdown-item">
+                            <span><span class="action-type">input.value</span></span>
+                            <strong>8</strong>
+                        </div>
+                    
+                        <div class="breakdown-item">
+                            <span><span class="action-type">form.addEventListener.submit</span></span>
+                            <strong>1</strong>
+                        </div>
+                    
+                </div>
+                <div>
+                    <h3>Request Sources</h3>
+                    
+                        <div class="breakdown-item">
+                            <span><span class="request-source">document</span></span>
+                            <strong>1</strong>
+                        </div>
+                    
+                        <div class="breakdown-item">
+                            <span><span class="request-source">fetch</span></span>
+                            <strong>18</strong>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 All Detected Actions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action ID</th>
+                            <th>Type</th>
+                            <th>Data</th>
+                            <th>Linked Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td><code>action_1753218924291_9hwz7oj04</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=username</td>
+                                <td><span style="color: #999;">None</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218931278_2onusxcqi</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=password</td>
+                                <td><strong>1</strong> requests</td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218933629_fzjo49f90</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=username</td>
+                                <td><span style="color: #999;">None</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218933630_2ttycd8ki</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=password</td>
+                                <td><strong>1</strong> requests</td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218933630_sruzogiul</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><strong>5</strong> requests</td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218935453_n98qpx39m</code></td>
+                                <td><span class="action-type">form.addEventListener.submit</span></td>
+                                <td>id=testForm</td>
+                                <td><span style="color: #999;">None</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218935455_rnbg7xbri</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=form-data</td>
+                                <td><strong>1</strong> requests</td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218936988_nh2v15s9r</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=creditcard</td>
+                                <td><span style="color: #999;">None</span></td>
+                            </tr>
+                          
+                            <tr>
+                                <td><code>action_1753218938675_hrqgxvuph</code></td>
+                                <td><span class="action-type">input.value</span></td>
+                                <td>id=ssn</td>
+                                <td><strong>9</strong> requests</td>
+                            </tr>
+                          
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <button type="button" class="collapsible">📂 Unlinked Requests (Page Load Resources) - 1 items</button>
+            <div class="collapsible-content">
+                <div class="warning">
+                    <strong>Note:</strong> These are normal page load resources (CSS, JS, images, fonts) that are not triggered by user input actions. This is expected behavior.
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Method</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                <tr>
+                                    <td><span class="url" title="file:///F:/Projects/baby-explorer/src/tests/test-malicious-behavior.html">file:///F:/Projects/baby-explorer/src/tests/test-malicious-behavior.html</span></td>
+                                    <td>GET</td>
+                                    <td><span class="request-source">document</span></td>
+                                    <td><span class="status-success">200</span></td>
+                                </tr>
+                            
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Make collapsible sections work
+        document.querySelectorAll('.collapsible').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            });
+        });
+        
+        // Add row highlighting on click
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', function() {
+                // Remove previous highlights
+                document.querySelectorAll('tr.highlighted').forEach(r => r.classList.remove('highlighted'));
+                // Add highlight to clicked row
+                this.classList.add('highlighted');
+            });
+        });
+    </script>
+    
+    <style>
+        .highlighted {
+            background-color: #fff3cd !important;
+            border-left: 4px solid #ffc107 !important;
+        }
+    </style>
+</body>
+</html>
+  

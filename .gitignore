@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.history/
+.taskmaster/
+.DS_Store
+*.log
