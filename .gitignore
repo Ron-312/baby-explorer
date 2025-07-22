@@ -5,3 +5,5 @@ dist/
 .taskmaster/
 .DS_Store
 *.log
+*.html
+history
